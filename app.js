@@ -15,6 +15,34 @@ const TOKEN_STORAGE_KEY = "valytic-uploader-token";
 const STATS_CACHE_KEY = "valytic-stats-cache";
 const STATS_CACHE_TTL = 60 * 1000;
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+
+function importUploaderToken() {
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    const token = hash.get("uploader-token");
+
+    if (!token) {
+        return;
+    }
+
+    history.replaceState(
+        null,
+        "",
+        `${window.location.pathname}${window.location.search}`
+    );
+
+    if (
+        !localStorage.getItem(TOKEN_STORAGE_KEY) &&
+        UUID_PATTERN.test(token)
+    ) {
+        localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    }
+}
+
+
+importUploaderToken();
+
 const MAX_CONCURRENT_UPLOADS = 1;
 const UPLOAD_INTERVAL = 1000;
 
